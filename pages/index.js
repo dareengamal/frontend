@@ -1,8 +1,38 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
+import { useState, useRef } from "react";
+import * as axios from 'axios';
+import { useRouter } from "next/router";
+
 
 export default function Home() {
+  
+ 
+
+  const [message, setMessage] = useState('');
+  const [orderId, setOrderId] = useState('');
+
+  const handleOrderCancellation = async (e) => {
+    console.log('orderId', orderId)
+    const { data } = await axios.default.delete(`https://shipping-one.vercel.app/api/shipments/${orderId}`, {
+      
+    });
+    if (data) {
+      setMessage(`Success! : ${data.id}`);
+    }
+  };
+
+  const handleOrderStatus = async (e) => {
+    const { data } = await axios.default.get(`https://shipping-one.vercel.app/api/shipments/${orderId}`, {
+      
+    });
+    if (data) {
+      setMessage(`Success! : ${data.id}`);
+    }
+  };
+  
+
   return (
     <div className={styles.container}>
       <Head>
@@ -17,16 +47,24 @@ export default function Home() {
         </h1>
 
         <p className={styles.description}>
-          Get started by tracking your order <input type="text" placeholder="Search.." id = "searchbox"></input>
+          Get started by tracking your order 
+          <input 
+            type="text"
+            placeholder="Search.."
+            id = "searchbox"
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+          />
           <button
               className="border p-2 mb-8 border-black shadow-offset-lime w-2/3 font-bold"
-              //onClick={(e) => handleOrderCancellation (e)}
+              onClick={(e) => handleOrderStatus(e)}
             >
               check order status
             </button>
           <button
               className="border p-2 mb-8 border-black shadow-offset-lime w-2/3 font-bold"
               //onClick={(e) => handleOrderCancellation (e)}
+              onClick={(e) => handleOrderCancellation(e)}
             >
               Cancel Order
             </button>
@@ -43,7 +81,11 @@ export default function Home() {
 
           
           
-          
+            <div>
+            <span className="text-red-600 leading-7 font-bold mt-3">
+              {message}
+            </span>
+          </div>
             
         </div>
       </main>
